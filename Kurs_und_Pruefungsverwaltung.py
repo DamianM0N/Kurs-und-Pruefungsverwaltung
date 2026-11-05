@@ -425,8 +425,8 @@ def berechne_kursdurchschnitt():
 
     if anzahl_berücksichtigt > 0:
         kurs_durchschnitt = round(kurs_note / anzahl_berücksichtigt, 1)
-        print({'durchschnitt': kurs_durchschnitt, 'gesamt': anzahl_übersprungen + anzahl_berücksichtigt, 'übersprungen': anzahl_übersprungen})
-        print()
+        informationen = {'durchschnitt': kurs_durchschnitt, 'gesamt': anzahl_übersprungen + anzahl_berücksichtigt, 'übersprungen': anzahl_übersprungen}
+        return informationen   
     else:
         raise RuntimeError(f'Fehler beim Berechnen des Durchschnitts: Es konnten keine gültiegen Noten berechnet werden. Es wurden {anzahl_übersprungen} Studierende ausgewertet')
 
@@ -436,6 +436,7 @@ def berechne_notenverteilung():
     Funktion die die Notenverteilung berechnet, speichert und als Text ausgibt
     '''
 
+    notenverteilung = {}
     for note in notentabelle:
         note['anzahl_studenten'] = 0
 
@@ -454,7 +455,8 @@ def berechne_notenverteilung():
                 continue
 
     for note in notentabelle:
-        print(f'• {note['anzahl_studenten']} haben eine {note['note']}')
+        notenverteilung[note['note']] = note['anzahl_studenten']
+    return notenverteilung
 
 
 def berechne_bestehensquote():
@@ -476,10 +478,11 @@ def berechne_bestehensquote():
         except:
             continue
 
-    if anzahl_bestanden + anzahl_nicht_bestanden != 0:
-        print(f'Die Bestehensquote liegt bei {((anzahl_bestanden)/(anzahl_bestanden + anzahl_nicht_bestanden)) * 100:.2f}%\n')
-    else:
-        print(f'Fehler: Bestehensquote konnte nicht ermittelt werden.')
+    if anzahl_bestanden + anzahl_nicht_bestanden == 0:
+        raise ZeroDivisionError('Es konnten keine Studenten berücksichtigt werden.')
+
+    bestehensquote = (anzahl_bestanden / (anzahl_bestanden + anzahl_nicht_bestanden)) * 100
+    return round(bestehensquote, 2)
 
 
 def finde_besten_studenten():
@@ -509,13 +512,9 @@ def finde_besten_studenten():
             beste_studenten.append(student)
 
     if len(beste_studenten) > 0:
-        print(f'Die höchste Punktzahl beträgt {max_punkte} und wurde erreicht von:')
-
-        for student in beste_studenten:
-            print(f'• {student['name']} | ID: {student['id']}')
-        print()
+        return {'max_punkte': max_punkte, 'beste_studenten': beste_studenten}
     else:
-        print('Fehler: Es gibt keinen Studenten mit vollständigen Punktzahlen.')
+        return {}
 
 
 def finde_schlechtesten_studenten():
@@ -545,13 +544,9 @@ def finde_schlechtesten_studenten():
             schlechteste_studenten.append(student)
 
     if len(schlechteste_studenten) > 0:
-        print(f'Die niedrigste Punktzahl beträgt {min_punkte} und wurde erreicht von:')
-
-        for student in schlechteste_studenten:
-            print(f'• {student['name']} | ID: {student['id']}')
-        print()
+        return {'min_punkte': min_punkte, 'schlechteste_studenten': schlechteste_studenten}
     else:
-        print('Fehler: Es gibt keinen Studenten mit vollständigen Punktzahlen.')
+        return {}
 
 
 def bestätigung ():
@@ -755,14 +750,53 @@ Was möchten Sie bearbeiten?
 
     elif eingabe == '3':
         #Kursanalyse einleiten
-        berechne_kursdurchschnitt()
-        berechne_bestehensquote()
-        finde_besten_studenten()
-        finde_schlechtesten_studenten()
+        try:
+            kursdurchschnitt = berechne_kursdurchschnitt()
+            print(f'Kursdurchschnitt: {kursdurchschnitt}\n')
         
+            bestehensquote = berechne_bestehensquote()
+            print(f'Die Bestehensquote liegt bei {bestehensquote}%\n')
+        
+            #Beste Studenten ausgeben
+            beste_studenten = finde_besten_studenten()
+            if beste_studenten:
+                print(f"Die höchste Punktzahl beträgt {beste_studenten['max_punkte']} Punkte.")
+                print('Erreicht von:')
+                for student in beste_studenten['beste_studenten']:
+                    print(f"• {student['name']} | ID: {student['id']}")
+                print()
+            else:
+                print('Keine Studenten mit vollständigen Punktzahlen vorhanden.')
+                print()
+        
+            #Schlechteste Studenten ausgeben
+            schlechteste_studenten = finde_schlechtesten_studenten()
+            if schlechteste_studenten:
+                print(f"Die niedrigste Punktzahl beträgt {schlechteste_studenten['min_punkte']} Punkte.")
+                print('Erreicht von:')
+                for student in schlechteste_studenten['schlechteste_studenten']:
+                   print(f"• {student['name']} | ID: {student['id']}")
+                print()
+            else:
+                print('Keine Studenten mit vollständigen Punktzahlen vorhanden.')
+        
+        except (ValueError, ZeroDivisionError) as fehler:
+                print(f'Fehler bei der Kursanalyse: {fehler}\n')
+
+
+
     elif eingabe == '4':
         #Notenverteilung anzeigen
-        berechne_notenverteilung()
+        try:
+            notenverteilung = berechne_notenverteilung()
+            print('Notenverteilung:')
+            for note, anzahl in notenverteilung.items():
+                print(f'• Note {note}: {anzahl} Studenten')
+        
+        except (ValueError, KeyError, TypeError) as fehler:
+            print(f'Fehler bei der Berechnung der Notenverteilung: {fehler}\n')
+
+
     
     elif eingabe.lower() == "exit":
         #Programm beenden
