@@ -567,6 +567,63 @@ def bestätigung ():
         return(bestätigung())
 
 
+"""
+Verschiedene Textausgaben werden hier ausgelagert, damit das Hauptprogramm übersichtlicher wird
+"""
+def print_text_hauptmenue():
+    print(f'''
+{85 * "-"}
+    
+"1" - Studierende suchen
+"2" - Studierende hinzufügen
+"3" - Kursanalyse anzeigen
+"4" - Notenverteilung anzeigen
+    
+"exit" - Programm beenden
+    
+    ''')
+
+
+def print_text_untermenue_student():
+    print(f'''
+Was möchten Sie tun?
+    
+{85 * '-'}
+    
+"1" - Bericht von {student["name"]} anzeigen 
+"2" - Student bearbeiten
+"3" - Student löschen
+"exit" - Zurückkehren
+    
+    ''')
+
+
+def print_text_einzelbericht(bericht):          #Nimmt das Dictionary von generiere_einzelbericht() und gibt es in schöner Form aus
+    print(f'''
+Name: {bericht['name']}
+Projektnote: {bericht['projekt']}
+Klausurnote: {bericht['klausur']}
+Gesamtpunktzahl: {bericht['gesamtpunkte']}
+Gesamtnote: {bericht['endnote']}
+Bestanden: {bericht['bestanden']}
+    
+    ''')
+
+
+def print_text_student_bearbeiten(student):         #NImmt das Dictionary von suche_studenten()
+    print(f'''
+Was möchten Sie bearbeiten?
+    
+{85 * '-'}
+    
+"1" - Name: {student.get('name')}
+"2" - Projektnote: {student.get('projekt')}
+"3" - Klausurnote: {student.get('klausur')}
+"exit" - Bearbeiten beenden
+    ''')
+
+
+
 #Programmablauf
 
 #Begrüßungsnachricht
@@ -577,17 +634,7 @@ Bitte wählen Sie die gewünschte Funktion aus:
 #Übergeordnete Schleife, bildet das Hauptmenü ab
 while True:
 
-    print(f'''
-{85 * "-"}
-
-"1" - Studierende suchen
-"2" - Studierende hinzufügen
-"3" - Kursanalyse anzeigen
-"4" - Notenverteilung anzeigen
-
-"exit" - Programm beenden
-
-    ''')
+    print_text_hauptmenue()
 
     #Abfrage der gewünschten Funktion
     eingabe = input(">")
@@ -627,17 +674,7 @@ while True:
 
         #Wenn ein eindeutiger Student gefunden wurde, neues Menü mit Aktionen zum Studenten öffnen
         while gefunden:
-            print(f'''
-Was möchten Sie tun?
-
-{85 * '-'}
-
-"1" - Bericht von {student["name"]} anzeigen 
-"2" - Student bearbeiten
-"3" - Student löschen
-"exit" - Zurückkehren
-
-            ''')
+            print_text_untermenue_student()
 
             eingabe = input('>')
 
@@ -645,31 +682,14 @@ Was möchten Sie tun?
             if eingabe == '1':
                 #Bericht generieren und ausgeben
                 bericht = generiere_einzelbericht(student['id'])
-                print(f'''
-Name: {bericht['name']}
-Projektnote: {bericht['projekt']}
-Klausurnote: {bericht['klausur']}
-Gesamtpunktzahl: {bericht['gesamtpunkte']}
-Gesamtnote: {bericht['endnote']}
-Bestanden: {bericht['bestanden']}
-
-                ''')
+                print_text_einzelbericht(bericht)
 
 
             elif eingabe == '2':
                 #Neues Menü zur Bearbeitung öffnen
 
                 while True:
-                    print(f'''
-Was möchten Sie bearbeiten?
-
-{85 * '-'}
-
-"1" - Name: {student.get('name')}
-"2" - Projektnote: {student.get('projekt')}
-"3" - Klausurnote: {student.get('klausur')}
-"exit" - Bearbeiten beenden
-                    ''')
+                    print_text_student_bearbeiten(student)
 
                     eingabe = input('>')
 
