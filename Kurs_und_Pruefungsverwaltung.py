@@ -146,6 +146,8 @@ def id_vorhanden(id):
     '''
     Funktion die untersucht, ob eine Studenten-ID bereits in der Liste vorhanden ist
     '''
+    id = str(id)
+
     try:
 
         #Gibt es einen Studenten, zu dem die eingegebene ID gehört?
@@ -195,7 +197,7 @@ def suche_studenten(eingabe):
 
             #Wenn nur ein Student gefunden wurde, diesen einzeln zurückliefern
             if(len(gefunden) == 1):
-                return {'menge': 'eins', 'ergebnis': gefunden[1]}
+                return {'menge': 'eins', 'ergebnis': gefunden[0]}
 
             #Wenn mehrere gefunden -> Liste zurückliefern
             elif(len(gefunden) > 1):
@@ -677,7 +679,7 @@ Was möchten Sie bearbeiten?
                         if (bestätigung()):
                             #Änderung versuchen, Fehler ausgeben falls nicht erfolgreich
                             try:
-                                bearbeite_name(student['id'])
+                                bearbeite_name(student['id'], eingabe)
                             except ValueError as fehler:
                                 print(f'{fehler} Bitte Änderung erneut versuchen.')
                         
@@ -697,7 +699,7 @@ Was möchten Sie bearbeiten?
                         if (bestätigung()):
                             #Änderung versuchen, Fehler ausgeben falls nicht erfolgreich
                             try:
-                                bearbeite_punkte(student['id'], punktzahl, 'projekt')
+                                bearbeite_punkte(student['id'], punktzahl, 'klausur')
                             except ValueError as fehler:
                                 print(f'{fehler} Bitte Änderung erneut versuchen.')
 
@@ -711,8 +713,10 @@ Was möchten Sie bearbeiten?
             elif eingabe == '3':
                 #Bestätigung einholen, Student entfernen und Bestätigungsnachricht ausgeben
                 if(bestätigung()):
-                    student_entfernt = studierende.pop(student)
+                    student_entfernt = student
+                    studierende.remove(student)
                     print(f'Student {student_entfernt} erfolgreich entfernt')
+                    gefunden = False
 
             elif eingabe == 'exit':
                 #Menü verlassen
