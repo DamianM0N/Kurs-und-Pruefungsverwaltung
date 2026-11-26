@@ -706,7 +706,7 @@ Was möchten Sie bearbeiten?
                         break
 
                     else:
-                        print('Ungültige Einabe. Erlaubte Eingaben sind:')
+                        print('Ungültige Eingabe. Erlaubte Eingaben sind:')
 
             elif eingabe == '3':
                 #Bestätigung einholen, Student entfernen und Bestätigungsnachricht ausgeben
