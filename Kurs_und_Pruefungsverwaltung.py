@@ -11,8 +11,7 @@ Es wurden folgende fachlichen Regeln beachtet:
 
 
 #Vorgegebener Datensatz mit fiktiven Studenten
-studierende = [
- {'id': 101, 'name': 'Anna', 'projekt': 17, 'klausur': 23},
+studierende = [{'id': 101, 'name': 'Anna', 'projekt': 17, 'klausur': 23},
  {'id': 102, 'name': 'David', 'projekt': 24, 'klausur': 34},
  {'id': 103, 'name': 'Sara', 'projekt': 31, 'klausur': 45},
  {'id': 104, 'name': 'Max', 'projekt': 38, 'klausur': 5},
@@ -235,8 +234,11 @@ def student_hinzufuegen(name, projekt_punkte, klausur_punkte):
 
     #Überprüfung ob eingegebene Werte erlaubt sind
     try:
-        #ID für den neuen Studenten generieren, die 1 größer als die größte existierende ist
-        id = studierende[-1].get('id') + 1
+        #ID für den neuen Studenten generieren, die 1 größer als die größte existierende ist / Ersten Studenten mit ID = 101 hinzufügen
+        if len(studierende) == 0:
+            id = 101
+        else:
+            id = studierende[-1].get('id') + 1
 
         if id_vorhanden(str(id)):
             raise ValueError(f"Automatisch generierte ID {id} ist bereits vorhanden")
@@ -681,8 +683,11 @@ while True:
 
             if eingabe == '1':
                 #Bericht generieren und ausgeben
-                bericht = generiere_einzelbericht(student['id'])
-                print_text_einzelbericht(bericht)
+                try:
+                    bericht = generiere_einzelbericht(student['id'])
+                    print_text_einzelbericht(bericht)
+                except RuntimeError:
+                    print(f'Bericht für {student["name"]}: unvollständig – es fehlen Projekt- oder Klausurpunkte.')
 
 
             elif eingabe == '2':
@@ -804,7 +809,7 @@ while True:
             else:
                 print('Keine Studenten mit vollständigen Punktzahlen vorhanden.')
         
-        except (ValueError, ZeroDivisionError) as fehler:
+        except (ValueError, ZeroDivisionError, RuntimeError) as fehler:
                 print(f'Fehler bei der Kursanalyse: {fehler}\n')
 
 
